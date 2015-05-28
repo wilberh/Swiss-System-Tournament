@@ -10,9 +10,9 @@ This project consists of 2 Python version 2.7.9 files, and one sql file,
 - 1.The tournament.py Python file stores the functions to be called.  
 - 2.The tournament_test.py Python file store the tests for the functions stored in the tournament.py Python file.
 - 3.The tournament.sql file can be viewed in a text editor and stores the Postgre sql version 9.3.6 instructions for:
-- creating the database (tournament),
-- connecting to the tournament database,
-- creating 2 tables (players and matches) for this database  
+-- creating the database (tournament),
+-- connecting to the tournament database,
+-- creating 2 tables (players and matches) for this database  
 
 The tournament_test.py Python file will have to be run to test the tournament.py Python file using the tournament.sql file to create the database and corresponding table.  The tournament_test.py file will print out the results of the test if successful or not on the command line or computer screen.
 
