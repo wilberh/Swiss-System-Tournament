@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # 
 # tournament.py -- implementation of a Swiss-system tournament
 #
@@ -74,22 +75,15 @@ def playerStandings():
     """
     DB = connect()
     c = DB.cursor()
-    #Dropping or removing the following views if they already exist in the database
-    c.execute("DROP VIEW IF EXISTS win CASCADE")
-    c.execute("DROP VIEW IF EXISTS loss")
-    c.execute("DROP VIEW IF EXISTS matchesplayed")
-    c.execute("DROP VIEW IF EXISTS standings")
-    
-    #Creating view "win" to list the players that have won a match
-    c.execute("CREATE VIEW win AS SELECT players.id, players.name, count(matches.winner) as wins FROM players LEFT JOIN matches ON players.id = matches.winner GROUP BY players.id ORDER BY wins DESC")
-    #Creating view "loss" to list the players that have lost a match
-    c.execute("CREATE VIEW loss AS SELECT players.id, players.name, count(matches.loser) as loses FROM players LEFT JOIN matches ON players.id = matches.loser GROUP BY players.id ORDER BY loses DESC")
-    #Creating view "matchesplayed" to list the players wins and loses into one view table
-    c.execute("CREATE VIEW matchesplayed AS SELECT win.id, win.name, win.wins, sum(win.wins + loss.loses) as played FROM win LEFT JOIN loss ON win.id = loss.id GROUP BY win.id, win.name, win.wins")
-    #Creating view "standings" for the current round
-    c.execute("CREATE VIEW standings AS SELECT players.id, players.name, matchesplayed.wins, matchesplayed.played as matches FROM players LEFT JOIN matchesplayed ON players.id = matchesplayed.id GROUP BY players.id, matchesplayed.wins, matchesplayed.played ORDER BY matchesplayed.wins DESC")
-    #Running the view "standings" query
+    #Querying view "win" to list the players that have won a match
+    c.execute("SELECT * FROM win")
+    #Querying view "loss" to list the players that have lost a match
+    c.execute("SELECT * FROM loss")
+    #Querying view "matchesplayed" to list the players wins and loses into one view table
+    c.execute("SELECT * FROM matchesplayed")
+    #Querying view "standings" for the current round
     c.execute("SELECT * FROM standings")
+    
     #Pulling the "standings" query results and storing them in the players_standings object
     players_standings = c.fetchall()
     DB.commit()
@@ -131,14 +125,30 @@ def swissPairings():
     """
     DB = connect()
     c = DB.cursor()
-    #Running a self joining query using the "standings" view query result to list the pairs of players for the next round
-    c.execute("SELECT a.id AS id1, a.name AS name1, b.id AS id2, b.name AS name2 FROM standings AS a, standings AS b WHERE a.wins = b.wins AND a.id < b.id ORDER BY a.wins DESC")
-    #Pulling the query results and storing them in the swiss_pairings object
-    swiss_pairings = c.fetchall()
+    #Counting the number of players
+    c.execute("SELECT count(*) as total_players FROM standings")
+    total_players_registered = c.fetchall()
+    #Pulling only the first column, first row cell content of this query
+    number_of_players = total_players_registered[0][0]
+
+    #If the total number of players is even
+    if (number_of_players % number_of_players) == 0:
+        #Querying view "swisspairings" for listing the next round matches of players
+        c.execute("SELECT * FROM swisspairings")
+        #Pulling the query results and storing them in the swiss_pairings object
+        swiss_pairings = c.fetchall()
+    else:
+        #If the total number of players is odd, then return only the pair matches and leave out the single player
+        c.execute("SELECT * FROM swisspairings limit '%s'", (number_of_players/2,))
+        swiss_pairings = c.fetchall()
+        
     DB.commit()   
     DB.close()
     #Returning the query results that were stored in the swiss_pairings object
     return swiss_pairings    
+
+
+
 
 
 
