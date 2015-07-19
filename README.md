@@ -42,4 +42,6 @@ This Swiss-System-Tournament documentation included in this repo in the root dir
 **Wilber Hernandez**
 - github.com/wilberh
 - twitter.com/wilberh
+- linkedin.com/in/wilberh
+
 
