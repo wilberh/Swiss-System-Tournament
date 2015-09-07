@@ -1,5 +1,5 @@
 # Swiss-System-Tournament
-- Python and PostgreSQL: Udacity Project 2 - Swiss System Tournament
+- Udacity Project 2:  Swiss System Tournament - using Python, and PostgreSQL
 
 
 This is an implementation of (the first round of) a Swiss-system tournament.
